@@ -41,15 +41,22 @@ func main() {
 func DeleteEquElems() {
 	for k, v := range Muls {
 		for i, s := range v {
+			f := false
 			for k1, v1 := range Muls {
 				if k != k1 {
 					for i1, s1 := range v1 {
 						if s == s1 {
-							v = append(v[:i], v[i:]...)
-							v1 = append(v1[:i1], v1[i1+1:]...)
+							// удаляем элементы s1
+							v1[i1] = 0
+							// фиксируем факт удаления
+							f = true
 						}
 					}
 				}
+			}
+			// если были совпадения то удаляем и сам элемент
+			if f {
+				v[i] = 0
 			}
 		}
 	}
