@@ -38,6 +38,11 @@ func main() {
 	OutSortKeyMap2(Muls)
 }
 
+/*
+	func remove(slice []int, i int) []int {
+		return append(slice[:i], slice[i+1:]...)
+	}
+*/
 func DeleteEquElems() {
 	for k, v := range Muls {
 		for i, s := range v {
@@ -47,6 +52,7 @@ func DeleteEquElems() {
 					for i1, s1 := range v1 {
 						if s == s1 {
 							// удаляем элементы s1
+							// v1 = remove(v1, i1)
 							v1[i1] = 0
 							// фиксируем факт удаления
 							f = true
@@ -56,6 +62,7 @@ func DeleteEquElems() {
 			}
 			// если были совпадения то удаляем и сам элемент
 			if f {
+				// v = remove(v, i)
 				v[i] = 0
 			}
 		}
