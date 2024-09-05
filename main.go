@@ -38,11 +38,23 @@ func main() {
 	OutSortKeyMap2(Muls)
 }
 
-/*
-	func remove(slice []int, i int) []int {
-		return append(slice[:i], slice[i+1:]...)
+func remove(slice []int, s int) []int {
+	if s < 0 || s > len(slice)-1 {
+		// ничего удалить нельзя
+		return slice
 	}
-*/
+	if s == 0 {
+		// первый элемент
+		return slice[1:]
+	}
+	if s == len(slice)-1 {
+		// последний элемент
+		return slice[:len(slice)-1]
+	}
+	// средние элементы
+	return append(slice[:s], slice[s+1:]...)
+}
+
 func DeleteEquElems() {
 	for k, v := range Muls {
 		for i, s := range v {
@@ -52,7 +64,7 @@ func DeleteEquElems() {
 					for i1, s1 := range v1 {
 						if s == s1 {
 							// удаляем элементы s1
-							// v1 = remove(v1, i1)
+							//v1 = remove(v1, i1)
 							v1[i1] = 0
 							// фиксируем факт удаления
 							f = true
@@ -67,6 +79,15 @@ func DeleteEquElems() {
 			}
 		}
 	}
+
+	for k, v := range Muls {
+		for i, s := range v {
+			if s == 0 {
+				Muls[k] = remove(Muls[k], i)
+			}
+		}
+	}
+
 }
 
 func MulsByPairsSums(Sums map[int][]Pair) map[int][]int {
