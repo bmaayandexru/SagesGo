@@ -12,82 +12,117 @@ type Pair struct {
 //type APairs []Pair
 
 var (
+	// крата простых чисел
 	prime map[int]bool
-	Sums  map[int][]Pair
-	Muls  map[int][]int
+	// карта сумм чисел до 100, кроме сумм простых чисел
+	// ключ - сумма. значение - слайс пар чисел, дающих эту сумму
+	Sums map[int][]Pair
+	// произведений по суммам
+	// ключ - сумма. значение - слайс произведений пар чисел
+	Muls map[int][]int
 )
 
 func main() {
 	fmt.Println("Sages...")
 	// prime - карта простых чисел
 	prime = SieveOfEratosthenes(100)
-	//	fmt.Println(prime)
-
-	// карта сумм, кроме сумм простых чисел
+	// карта сумм чисел до 100, кроме сумм простых чисел
+	// ключ - сумма. значение слайс пар чисел, дающих эту сумму
 	Sums = SumsNoPrime()
 	// вывод ключей мапы в отсортированном слайсе
-	OutSortKeyMap(Sums)
-	OutSortKeyMap1(Sums)
+	//	OutSortKeyMapPairs(Sums)
+	OutSortKeyMapPairs(Sums)
 
-	fmt.Println("*****************")
+	fmt.Println("***Произведения по суммам***")
 
 	// построение такой же мапы произведений по парам сумм
 	Muls = MulsByPairsSums(Sums)
-	OutSortKeyMap2(Muls)
-	DeleteEquElems()
-	OutSortKeyMap2(Muls)
+	OutSortKeyMapInts(Muls)
+	// удаление элементов слайсов с одинаковыми произведениями
+	fmt.Println("***Удаление одинаковых произведений***")
+	DelEquElems()
+	OutSortKeyMapInts(Muls)
+	SearchAnswer()
 }
 
-func remove(slice []int, s int) []int {
-	if s < 0 || s > len(slice)-1 {
+func remove(slice []int, pos int) []int {
+	if pos < 0 || pos > len(slice)-1 {
 		// ничего удалить нельзя
 		return slice
 	}
-	if s == 0 {
+	if pos == 0 {
 		// первый элемент
 		return slice[1:]
 	}
-	if s == len(slice)-1 {
+	if pos == len(slice)-1 {
 		// последний элемент
 		return slice[:len(slice)-1]
 	}
 	// средние элементы
-	return append(slice[:s], slice[s+1:]...)
+	return append(slice[:pos], slice[pos+1:]...)
 }
 
-func DeleteEquElems() {
-	for k, v := range Muls {
-		for i, s := range v {
+func SearchAnswer() {
+	var (
+		key    int
+		s      []int
+		ansMul int
+	)
+
+	// поиск ответа
+	fmt.Println("***Search Answer***")
+	// найти в Muls элемент с одним произведением
+	for key, s = range Muls {
+		if len(s) == 1 {
+			ansMul = s[0]
+			break
+		}
+	}
+	// по ключу элемента найти в Sums пару c исходным произведением
+	// выдать пару за ответ
+	if pairs, ok := Sums[key]; ok {
+		f := false
+		for _, p := range pairs {
+			if p.n1*p.n2 == ansMul {
+				fmt.Println("Решение: ", p)
+				f = true
+			}
+		}
+		if !f {
+			fmt.Println("Нет решения")
+		}
+	} else {
+		fmt.Println("Нет решения")
+	}
+
+}
+
+func DelEquElems() {
+	for k, _ := range Muls {
+		for i := 0; i < len(Muls[k]); {
 			f := false
-			for k1, v1 := range Muls {
+			for k1, _ := range Muls {
 				if k != k1 {
-					for i1, s1 := range v1 {
-						if s == s1 {
-							// удаляем элементы s1
-							//v1 = remove(v1, i1)
-							v1[i1] = 0
+					for i1 := 0; i1 < len(Muls[k1]); {
+						if Muls[k][i] == Muls[k1][i1] {
+							// удаляем элемент i1
+							Muls[k1] = remove(Muls[k1], i1)
 							// фиксируем факт удаления
 							f = true
+						} else {
+							i1++
 						}
 					}
 				}
 			}
 			// если были совпадения то удаляем и сам элемент
 			if f {
-				// v = remove(v, i)
-				v[i] = 0
-			}
-		}
-	}
-
-	for k, v := range Muls {
-		for i, s := range v {
-			if s == 0 {
 				Muls[k] = remove(Muls[k], i)
+			} else {
+				i++
 			}
 		}
 	}
-
 }
 
 func MulsByPairsSums(Sums map[int][]Pair) map[int][]int {
@@ -100,7 +135,7 @@ func MulsByPairsSums(Sums map[int][]Pair) map[int][]int {
 	return mp
 }
 
-func OutSortKeyMap(mp map[int][]Pair) {
+func OutSortKeyMapPairs(mp map[int][]Pair) {
 	ss := make([]int, 0)
 	for k, _ := range mp {
 		ss = append(ss, k)
@@ -109,7 +144,7 @@ func OutSortKeyMap(mp map[int][]Pair) {
 	fmt.Println(ss)
 }
 
-func OutSortKeyMap1(mp map[int][]Pair) {
+func OutSortKeyMapInts(mp map[int][]int) {
 	ss := make([]int, 0)
 	for k, _ := range mp {
 		ss = append(ss, k)
@@ -118,10 +153,9 @@ func OutSortKeyMap1(mp map[int][]Pair) {
 	for _, v := range ss {
 		fmt.Println(v, mp[v])
 	}
-
 }
 
-func OutSortKeyMap2(mp map[int][]int) {
+func OutSortKeyMapAny(mp map[int][]any) {
 	ss := make([]int, 0)
 	for k, _ := range mp {
 		ss = append(ss, k)
@@ -130,7 +164,6 @@ func OutSortKeyMap2(mp map[int][]int) {
 	for _, v := range ss {
 		fmt.Println(v, mp[v])
 	}
-
 }
 
 func DeleteSumsDoubleMul() {
