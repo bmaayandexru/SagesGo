@@ -30,6 +30,7 @@ func main() {
 	// ключ - сумма. значение слайс пар чисел, дающих эту сумму
 	Sums = SumsNoPrime()
 	// вывод ключей мапы в отсортированном слайсе
+	fmt.Println("***Суммы и пары***")
 	//	OutSortKeyMapPairs(Sums)
 	OutSortKeyMapPairs(Sums)
 
@@ -70,7 +71,7 @@ func SearchAnswer() {
 	)
 
 	// поиск ответа
-	fmt.Println("***Search Answer***")
+	fmt.Println("***Поиск ответа***")
 	// найти в Muls элемент с одним произведением
 	for key, s = range Muls {
 		if len(s) == 1 {
@@ -141,7 +142,10 @@ func OutSortKeyMapPairs(mp map[int][]Pair) {
 		ss = append(ss, k)
 	}
 	sort.Ints(ss)
-	fmt.Println(ss)
+	// fmt.Println(ss)
+	for _, v := range ss {
+		fmt.Println(v, mp[v])
+	}
 }
 
 func OutSortKeyMapInts(mp map[int][]int) {
@@ -200,7 +204,7 @@ func DeleteSumsDoubleMul() {
 
 func SumsNoPrime() map[int][]Pair {
 	mp := make(map[int][]Pair)
-	// мапа пустых слайсов
+	// мапа пустых слайсов пар всех возможных сумм от 4 до 100
 	for i := 4; i < 100; i++ {
 		mp[i] = []Pair{}
 	}
@@ -208,10 +212,10 @@ func SumsNoPrime() map[int][]Pair {
 		for j := i; j < 100; j++ {
 			if i+j < 100 {
 				if IsPrime(j) && IsPrime(i) {
-					// удаляем
+					// удаляем сумму если оба числа простые
 					delete(mp, i+j)
 				} else {
-					// добавляем если есть
+					// добавляем если еще не удалено
 					if _, ok := mp[i+j]; ok {
 						mp[i+j] = append(mp[i+j], Pair{i, j})
 					}
@@ -231,9 +235,11 @@ func NoDoublePrime(i, j int) bool {
 // Решето Эратосфена. Полушаем карту простых чисел
 func SieveOfEratosthenes(n int) map[int]bool {
 	mapNum := make(map[int]bool)
+	// карта всех чисел от 2 до n
 	for i := 2; i <= n; i++ {
 		mapNum[i] = true
 	}
+	// сбрасываем в false элементы по алгоритму Эратосфена
 	for i, v := range mapNum {
 		if v {
 			for j := i * i; j <= n; j += i {
@@ -241,18 +247,18 @@ func SieveOfEratosthenes(n int) map[int]bool {
 			}
 		}
 	}
+	// удаляем все сброшенные элементы из карты
 	for i, v := range mapNum {
 		if !v {
 			delete(mapNum, i)
 		}
 	}
+	// возвращаем полученную карту
 	return mapNum
 }
 
 // Функция простоты числа
-// func IsPrime(n int, m map[int]bool) bool {
 func IsPrime(n int) bool {
 	_, ok := prime[n]
-	// fmt.Println(n, k, ok)
 	return ok
 }
