@@ -98,6 +98,7 @@ func SearchAnswer() {
 
 }
 
+// удаление одинаковых элементов из слайсов карты произведений
 func DelEquElems() {
 	for k, _ := range Muls {
 		for i := 0; i < len(Muls[k]); {
